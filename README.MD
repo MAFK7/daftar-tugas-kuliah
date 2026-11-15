@@ -1,6 +1,6 @@
 # Daftar Tugas Kuliah
 
-Aplikasi untuk mencatat dan memantau tugas kuliah
+Aplikasi web pengelola dan pemantau tugas kuliah berbasis TypeScript dan Vite.
 
 ## Teknologi
 - TypeScript
