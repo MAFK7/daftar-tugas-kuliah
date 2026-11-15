@@ -2,41 +2,55 @@ import './style.css';
 import type { Tugas, Status, FilterType } from './types';
 import { loadData, saveData } from './storage';
 
+// Environment variables
 const appName: string = import.meta.env.VITE_APP_NAME;
 const appVersion: string = import.meta.env.VITE_APP_VERSION;
 const STORAGE_KEY = 'tugas-kuliah';
 
+// Pisahkan kata terakhir judul untuk efek sticker
+const kataJudul: string[] = appName.split(' ');
+const kataTerakhir: string = kataJudul.pop() ?? '';
+const kataAwal: string = kataJudul.join(' ');
+
+// State
 let daftarTugas: Tugas[] = loadData<Tugas[]>(STORAGE_KEY, []);
 let editingId: number | null = null;
 let filter: FilterType = 'Semua';
+let animasiAwal: boolean = true;
 
 document.title = appName;
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
-  <header class="header">
-    <h1>${appName}</h1>
-    <span class="badge">v${appVersion}</span>
-  </header>
-  <main class="container">
+  <div class="wrap">
+    <h1 class="title">${kataAwal} <span class="sticker">${kataTerakhir}</span></h1>
+
     <form id="form" class="card">
-      <h2 id="form-title">Tambah Tugas</h2>
-      <input id="judul" placeholder="Judul tugas" required />
-      <input id="matkul" placeholder="Mata kuliah" required />
-      <input id="deadline" type="date" required />
+      <h2 id="form-title" class="label">Tambah Tugas</h2>
+      <div class="form-grid">
+        <input id="judul" class="full" placeholder="Judul tugas" required />
+        <input id="matkul" placeholder="Mata kuliah" required />
+        <input id="deadline" type="date" required />
+      </div>
       <div class="actions">
-        <button type="submit" id="submit-btn">Tambah</button>
-        <button type="button" id="cancel-btn" class="secondary hidden">Batal</button>
+        <button type="submit" id="submit-btn" class="btn btn-primary">Tambah</button>
+        <button type="button" id="cancel-btn" class="btn btn-cancel hidden">Batal</button>
       </div>
     </form>
-    <div class="filters">
-      <button data-filter="Semua" class="active">Semua</button>
-      <button data-filter="Belum Selesai">Belum Selesai</button>
-      <button data-filter="Selesai">Selesai</button>
+
+    <div class="toolbar">
+      <div class="filters">
+        <button data-filter="Semua" class="chip active">Semua</button>
+        <button data-filter="Belum Selesai" class="chip">Belum Selesai</button>
+        <button data-filter="Selesai" class="chip">Selesai</button>
+      </div>
+      <p id="summary" class="summary"></p>
     </div>
-    <p id="summary" class="summary"></p>
+
     <ul id="list" class="list"></ul>
-  </main>
+
+    <p class="foot">v${appVersion}</p>
+  </div>
 `;
 
 const form = document.querySelector<HTMLFormElement>('#form')!;
@@ -54,6 +68,12 @@ function escapeHtml(text: string): string {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+function formatTanggal(iso: string): string {
+  const bulan: string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  const [tahun, bln, hari] = iso.split('-');
+  return `${Number(hari)} ${bulan[Number(bln) - 1]} ${tahun}`;
 }
 
 function simpan(): void {
@@ -81,27 +101,32 @@ function render(): void {
     return;
   }
 
+  const kelasMasuk: string = animasiAwal ? 'enter' : '';
+
   listEl.innerHTML = tampil
     .map(
-      (t) => `
-    <li class="item ${t.status === 'Selesai' ? 'done' : ''}">
+      (t, i) => `
+    <li class="item ${t.status === 'Selesai' ? 'done' : ''} ${kelasMasuk}" style="animation-delay:${i * 50}ms">
       <div class="info">
         <strong>${escapeHtml(t.judul)}</strong>
-        <span>${escapeHtml(t.matkul)} • Deadline: ${escapeHtml(t.deadline)}</span>
+        <span class="meta">${escapeHtml(t.matkul)} • Deadline: ${formatTanggal(t.deadline)}</span>
         <span class="status ${t.status === 'Selesai' ? 'ok' : 'pending'}">${t.status}</span>
       </div>
       <div class="buttons">
-        <button data-action="toggle" data-id="${t.id}">
+        <button data-action="toggle" data-id="${t.id}" class="btn-sm">
           ${t.status === 'Selesai' ? 'Batalkan' : 'Selesai'}
         </button>
-        <button data-action="edit" data-id="${t.id}" class="secondary">Edit</button>
-        <button data-action="delete" data-id="${t.id}" class="danger">Hapus</button>
+        <button data-action="edit" data-id="${t.id}" class="btn-sm">Edit</button>
+        <button data-action="delete" data-id="${t.id}" class="btn-sm">Hapus</button>
       </div>
     </li>`
     )
     .join('');
+
+  animasiAwal = false;
 }
 
+// Tambah atau simpan hasil edit
 form.addEventListener('submit', (e: Event) => {
   e.preventDefault();
   const judul: string = judulInput.value.trim();
@@ -131,6 +156,7 @@ form.addEventListener('submit', (e: Event) => {
 
 cancelBtn.addEventListener('click', resetForm);
 
+// Toggle status, edit, hapus
 listEl.addEventListener('click', (e: Event) => {
   const target = e.target as HTMLElement;
   const action = target.dataset.action;
@@ -165,6 +191,7 @@ listEl.addEventListener('click', (e: Event) => {
   }
 });
 
+// Filter
 filterBtns.forEach((btn) => {
   btn.addEventListener('click', () => {
     filter = btn.dataset.filter as FilterType;
