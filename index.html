@@ -1,19 +1,152 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>tugas-kuliah-app</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=DM+Sans:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tugas-kuliah-app</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=DM+Sans:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/src/penjelasan.css" />
+  <script type="module" src="/src/penjelasan.ts"></script>
+</head>
+
+<body>
+  <div id="app"></div>
+  <button type="button" id="buka-penjelasan" class="tombol-penjelasan">Penjelasan Singkat</button>
+
+  <dialog id="dialog-penjelasan" class="dialog-penjelasan" aria-labelledby="judul-penjelasan">
+    <button type="button" id="tutup-penjelasan" class="tombol-tutup">✕ Tutup</button>
+    <section id="penjelasan" class="penjelasan">
+      <h2 id="judul-penjelasan">Penjelasan Singkat</h2>
+
+      <article class="kartu">
+        <h3>Git dan GitHub</h3>
+        <p>
+          Git mencatat riwayat perubahan kode, dan GitHub menyimpannya secara online.
+          Setiap perubahan disimpan sebagai commit, dan saya membuat 8 commit. Branch
+          dipakai untuk mengerjakan fitur terpisah dari branch utama (saya membuat branch
+          <code>feature/readme</code>), lalu digabung lewat merge. Saat dua perubahan
+          menyentuh baris yang sama, terjadi merge conflict yang harus diselesaikan
+          manual; saya mengalaminya di file README ketika deskripsi diubah di dua tempat
+          berbeda, lalu saya selesaikan lewat commit
+          <code>merge: resolve README conflict</code>. Pull Request dipakai untuk
+          mengajukan penggabungan branch: saya membuat Pull Request #1 dari branch
+          <code>feature/readme</code> untuk menambahkan README. File
+          <code>.gitignore</code> menjaga file yang tidak perlu (seperti
+          <code>.env</code> dan <code>node_modules</code>) tidak terunggah.
+        </p>
+      </article>
+
+      <article class="kartu">
+        <h3>npm</h3>
+        <p>
+          npm mengelola package yang dipakai proyek. Daftar package dan perintah proyek
+          ada di <code>package.json</code>. <code>dependencies</code> adalah package yang
+          dibutuhkan aplikasi saat berjalan, sedangkan <code>devDependencies</code> hanya
+          dibutuhkan saat pengembangan. Proyek ini hanya memakai
+          <code>devDependencies</code>, yaitu <code>typescript</code> dan
+          <code>vite</code>, karena hasil build berupa file statis. Versi memakai semantic
+          versioning MAJOR.MINOR.PATCH: <code>typescript</code> memakai
+          <code>~7.0.2</code> (hanya pembaruan patch), sedangkan <code>vite</code> memakai
+          <code>^8.3.6</code> (pembaruan minor dan patch). npm scripts yang saya pakai:
+          <code>dev</code> (menjalankan <code>vite</code> untuk server lokal),
+          <code>build</code> (menjalankan <code>tsc &amp;&amp; vite build</code>), dan
+          <code>preview</code> (menjalankan <code>vite preview</code> untuk melihat hasil
+          build).
+        </p>
+      </article>
+
+      <article class="kartu">
+        <h3>TypeScript</h3>
+        <p>
+          TypeScript menambahkan tipe pada JavaScript sehingga kesalahan tipe ketahuan
+          sebelum aplikasi dijalankan. Contoh penggunaannya di aplikasi ini:
+        </p>
+        <ul>
+          <li>
+            <strong>Primitive types:</strong> <code>string</code>, <code>number</code>,
+            dan <code>boolean</code>, misalnya
+            <code>let animasiAwal: boolean = true</code> dan properti
+            <code>id: number</code> serta <code>judul: string</code> pada
+            <code>interface Tugas</code>.
+          </li>
+          <li>
+            <strong>Array:</strong> <code>const kataJudul: string[]</code> dan
+            <code>let daftarTugas: Tugas[]</code>.
+          </li>
+          <li>
+            <strong>Interface:</strong> <code>interface Tugas</code> dengan properti
+            <code>id</code>, <code>judul</code>, <code>matkul</code>,
+            <code>deadline</code>, dan <code>status</code>.
+          </li>
+          <li>
+            <strong>Type alias dan union type:</strong>
+            <code>type Status = 'Belum Selesai' | 'Selesai'</code> dan
+            <code>type FilterType = 'Semua' | Status</code>.
+          </li>
+          <li>
+            <strong>Generics sederhana:</strong> fungsi
+            <code>loadData&lt;T&gt;(key: string, fallback: T): T</code> dan
+            <code>saveData&lt;T&gt;(key: string, data: T): void</code> di
+            <code>src/storage.ts</code>, yang saya panggil sebagai
+            <code>loadData&lt;Tugas[]&gt;</code> dan <code>saveData&lt;Tugas[]&gt;</code>
+            untuk menyimpan dan membaca daftar tugas.
+          </li>
+        </ul>
+      </article>
+
+      <article class="kartu">
+        <h3>Vite</h3>
+        <p>
+          Vite adalah alat pengembangan yang menjalankan server lokal lewat perintah
+          <code>npm run dev</code> dan membangun aplikasi untuk produksi lewat
+          <code>npm run build</code>. Hasil build berupa file statis yang kemudian saya
+          deploy di Vercel.
+        </p>
+      </article>
+
+      <article class="kartu">
+        <h3>Compiler, transpiler, dan bundler</h3>
+        <ul>
+          <li>
+            <strong>Compiler</strong> menerjemahkan kode sumber ke bentuk lain. Di proyek
+            ini, perintah <code>tsc</code> pada script <code>build</code> memeriksa tipe
+            TypeScript sebelum build dilanjutkan.
+          </li>
+          <li>
+            <strong>Transpiler</strong> menerjemahkan antar bahasa yang selevel, yaitu
+            TypeScript menjadi JavaScript yang bisa dijalankan browser. Itu terjadi saat
+            Vite memproses kode.
+          </li>
+          <li>
+            <strong>Bundler</strong> menggabungkan banyak file dan package menjadi file
+            yang lebih sedikit dan dioptimalkan untuk browser. Di proyek ini hal itu
+            terjadi saat <code>vite build</code> dijalankan.
+          </li>
+        </ul>
+      </article>
+
+      <article class="kartu">
+        <h3>Environment variables</h3>
+        <p>
+          File <code>.env</code> menyimpan konfigurasi yang berbeda antar lingkungan, dan
+          <code>.env.example</code> memberi contoh isinya tanpa nilai rahasia. Di Vite,
+          hanya variabel berawalan <code>VITE_</code> yang bisa dibaca kode di browser,
+          jadi password atau API key rahasia tidak boleh ditaruh di situ. File
+          <code>.env</code> masuk <code>.gitignore</code> sehingga tidak ikut ke GitHub.
+          Variabel yang saya pakai: <code>VITE_APP_NAME</code> (nama aplikasi) dan
+          <code>VITE_APP_VERSION</code> (versi aplikasi), keduanya non-rahasia.
+        </p>
+      </article>
+    </section>
+  </dialog>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>
